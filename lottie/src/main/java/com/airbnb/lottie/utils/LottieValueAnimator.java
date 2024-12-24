@@ -21,6 +21,8 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
   private float speed = 1f;
   private boolean speedReversedForRepeatMode = false;
   private long lastFrameTimeNs = 0;
+  private long lastNotifyUpdateTimeNs = 0;
+  private float notifyUpdateIntervalNs = L.getForceNotifyUpdateIntervalNs();
   private float frame = 0;
   private int repeatCount = 0;
   private float minFrame = Integer.MIN_VALUE;
@@ -89,13 +91,23 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     float frameDuration = getFrameDurationNs();
     float dFrames = timeSinceFrame / frameDuration;
 
+    // android.util.Log.i("LottieValueAnimator", "timeSinceFrame: " + timeSinceFrame + ", dFrames: " + dFrames + ", frameDuration: " + frameDuration);
+
     frame += isReversed() ? -dFrames : dFrames;
     boolean ended = !MiscUtils.contains(frame, getMinFrame(), getMaxFrame());
     frame = MiscUtils.clamp(frame, getMinFrame(), getMaxFrame());
 
     lastFrameTimeNs = frameTimeNanos;
-
-    notifyUpdate();
+    if (notifyUpdateIntervalNs > 0) {
+      long timeSinceNotifyUpdate = lastNotifyUpdateTimeNs == 0 ? 0 : frameTimeNanos - lastNotifyUpdateTimeNs;
+      if (lastNotifyUpdateTimeNs == 0 || timeSinceNotifyUpdate > notifyUpdateIntervalNs || ended) {
+        notifyUpdate();
+        // android.util.Log.i("LottieValueAnimator", "notifyUpdate - notifyUpdateIntervalNs: " + notifyUpdateIntervalNs + ", lastNotifyUpdateTimeNs: " + lastNotifyUpdateTimeNs + ", timeSinceNotifyUpdate: " + timeSinceNotifyUpdate);
+        lastNotifyUpdateTimeNs = frameTimeNanos;
+      }
+    } else {
+      notifyUpdate();
+    }
     if (ended) {
       if (getRepeatCount() != INFINITE && repeatCount >= getRepeatCount()) {
         frame = speed < 0 ? getMinFrame() : getMaxFrame();
@@ -156,6 +168,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     }
     this.frame = MiscUtils.clamp(frame, getMinFrame(), getMaxFrame());
     lastFrameTimeNs = 0;
+    lastNotifyUpdateTimeNs = 0;
     notifyUpdate();
   }
 
@@ -197,6 +210,12 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     return speed;
   }
 
+  public void setNotifyUpdateRate(float notifyUpdateRate) {
+    if (notifyUpdateRate > 0) {
+      notifyUpdateIntervalNs = Utils.SECOND_IN_NANOS / notifyUpdateRate;
+    }
+  }
+
   @Override public void setRepeatMode(int value) {
     super.setRepeatMode(value);
     if (value != REVERSE && speedReversedForRepeatMode) {
@@ -211,6 +230,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     notifyStart(isReversed());
     setFrame((int) (isReversed() ? getMaxFrame() : getMinFrame()));
     lastFrameTimeNs = 0;
+    lastNotifyUpdateTimeNs = 0;
     repeatCount = 0;
     postFrameCallback();
   }
@@ -231,6 +251,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     running = true;
     postFrameCallback();
     lastFrameTimeNs = 0;
+    lastNotifyUpdateTimeNs = 0;
     if (isReversed() && getFrame() == getMinFrame()) {
       frame = getMaxFrame();
     } else if (!isReversed() && getFrame() == getMaxFrame()) {

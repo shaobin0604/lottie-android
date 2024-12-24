@@ -197,6 +197,10 @@ import java.util.concurrent.Callable;
       setSpeed(ta.getFloat(R.styleable.LottieAnimationView_lottie_speed, 1f));
     }
 
+    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_notifyUpdateRate)) {
+      setNotifyUpdateRate(ta.getFloat(R.styleable.LottieAnimationView_lottie_notifyUpdateRate, 0f));
+    }
+
     setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
     setProgress(ta.getFloat(R.styleable.LottieAnimationView_lottie_progress, 0));
     enableMergePathsForKitKatAndAbove(ta.getBoolean(
@@ -781,6 +785,10 @@ import java.util.concurrent.Callable;
    */
   public float getSpeed() {
     return lottieDrawable.getSpeed();
+  }
+
+  public void setNotifyUpdateRate(float notifyUpdateRate) {
+    lottieDrawable.setNotifyUpdateRate(notifyUpdateRate);
   }
 
   public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {

@@ -741,6 +741,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return animator.getSpeed();
   }
 
+  public void setNotifyUpdateRate(float notifyUpdateRate) {
+    animator.setNotifyUpdateRate(notifyUpdateRate);
+  }
+
   public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
     animator.addUpdateListener(updateListener);
   }

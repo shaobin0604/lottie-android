@@ -1,0 +1,28 @@
+/**
+ * 该脚本用于发布 android library 的构建产物 aar 到 mavenLocal() 仓库，即 ~/.m2
+ *
+ * 使用方法：
+ *
+ * 1. 在 android library project 的 build.gradle 中 apply 该脚本，并配置好 POM_ARTIFACT_ID 和 POM_VERSION_NAME
+ * 2. 执行命令 <code>$ ./gradlew <module name>:publishToMavenLocal</code>
+ */
+
+apply plugin: 'maven-publish'
+
+afterEvaluate {
+    publishing {
+        publications {
+            library(MavenPublication) {
+                groupId 'com.fiture.android'
+                artifactId POM_ARTIFACT_ID
+                version POM_VERSION_NAME
+
+                artifact(bundleReleaseAar)
+            }
+        }
+
+        repositories {
+            mavenLocal()
+        }
+    }
+}

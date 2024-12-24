@@ -18,12 +18,14 @@ public class LottieConfig {
   @Nullable final LottieNetworkFetcher networkFetcher;
   @Nullable final LottieNetworkCacheProvider cacheProvider;
   final boolean enableSystraceMarkers;
+  final float forceAnimationFrameRate;
 
   private LottieConfig(@Nullable LottieNetworkFetcher networkFetcher, @Nullable LottieNetworkCacheProvider cacheProvider,
-      boolean enableSystraceMarkers) {
+      boolean enableSystraceMarkers, float forceAnimationFrameRate) {
     this.networkFetcher = networkFetcher;
     this.cacheProvider = cacheProvider;
     this.enableSystraceMarkers = enableSystraceMarkers;
+    this.forceAnimationFrameRate = forceAnimationFrameRate;
   }
 
   public static final class Builder {
@@ -33,7 +35,16 @@ public class LottieConfig {
     @Nullable
     private LottieNetworkCacheProvider cacheProvider;
     private boolean enableSystraceMarkers = false;
+    private float forceAnimationFrameRate = 0F;
 
+    @NonNull
+    public Builder setForceAnimationFrameRate(float forceAnimationFrameRate) {
+      if (forceAnimationFrameRate <= 0) {
+        throw new IllegalArgumentException("forceAnimationFrameRate must be greater than 0");
+      }
+      this.forceAnimationFrameRate = forceAnimationFrameRate;
+      return this;
+    }
     /**
      * Lottie has a default network fetching stack built on {@link java.net.HttpURLConnection}. However, if you would like to hook into your own
      * network stack for performance, caching, or analytics, you may replace the internal stack with your own.
@@ -100,7 +111,7 @@ public class LottieConfig {
 
     @NonNull
     public LottieConfig build() {
-      return new LottieConfig(networkFetcher, cacheProvider, enableSystraceMarkers);
+      return new LottieConfig(networkFetcher, cacheProvider, enableSystraceMarkers, forceAnimationFrameRate);
     }
   }
 }

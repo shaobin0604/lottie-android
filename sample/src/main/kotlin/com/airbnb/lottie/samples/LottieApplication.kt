@@ -2,6 +2,8 @@ package com.airbnb.lottie.samples
 
 import androidx.multidex.MultiDexApplication
 import com.airbnb.lottie.L
+import com.airbnb.lottie.Lottie
+import com.airbnb.lottie.LottieConfig
 import com.airbnb.lottie.samples.api.LottiefilesApi
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
@@ -36,6 +38,8 @@ class LottieApplication : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
+        Lottie.initialize(LottieConfig.Builder().setForceAnimationFrameRate(15F).build())
+
         L.DBG = true
         @Suppress("RestrictedApi")
         L.setTraceEnabled(true)

@@ -3,7 +3,7 @@ import net.ltgt.gradle.errorprone.CheckSeverity
 plugins {
   id 'com.android.library'
   id 'net.ltgt.errorprone'
-  id 'com.vanniktech.maven.publish'
+//  id 'com.vanniktech.maven.publish'
 }
 
 android {
@@ -89,3 +89,10 @@ tasks.withType(JavaCompile) {
     }
   }
 }
+
+ext {
+  POM_ARTIFACT_ID = "lottie"
+  POM_VERSION_NAME = "4.2.2"
+}
+
+apply from: rootProject.file('publish2local.gradle')

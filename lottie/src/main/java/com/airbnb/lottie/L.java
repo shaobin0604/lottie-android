@@ -11,6 +11,7 @@ import com.airbnb.lottie.network.LottieNetworkCacheProvider;
 import com.airbnb.lottie.network.LottieNetworkFetcher;
 import com.airbnb.lottie.network.NetworkCache;
 import com.airbnb.lottie.network.NetworkFetcher;
+import com.airbnb.lottie.utils.Utils;
 
 import java.io.File;
 
@@ -33,7 +34,21 @@ public class L {
   private static volatile NetworkFetcher networkFetcher;
   private static volatile NetworkCache networkCache;
 
+  private static float forceNotifyUpdateIntervalNs = 0F;
+
   private L() {
+  }
+
+  public static void setForceAnimationFrameRate(float forceAnimationFrameRate) {
+    if (forceAnimationFrameRate > 0) {
+      L.forceNotifyUpdateIntervalNs = Utils.SECOND_IN_NANOS / forceAnimationFrameRate;
+    } else {
+      L.forceNotifyUpdateIntervalNs = 0;
+    }
+  }
+
+  public static float getForceNotifyUpdateIntervalNs() {
+    return forceNotifyUpdateIntervalNs;
   }
 
   public static void setTraceEnabled(boolean enabled) {
